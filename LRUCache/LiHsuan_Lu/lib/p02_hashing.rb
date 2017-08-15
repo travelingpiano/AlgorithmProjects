@@ -5,7 +5,7 @@ end
 class Array
   def hash
     hash_num = 0
-    self.each_with_index{|num, idx| hash_num += num*idx}
+    self.flatten.each_with_index{|num, idx| hash_num += num*idx}
     hash_num.hash
   end
 end
