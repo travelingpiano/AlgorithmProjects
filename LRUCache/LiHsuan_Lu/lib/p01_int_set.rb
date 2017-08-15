@@ -67,13 +67,19 @@ class ResizingIntSet
   end
 
   def insert(num)
-
+    resize! if @count == num_buckets
+    @store[num%num_buckets].push(num)
+    @count += 1
   end
 
   def remove(num)
+    raise 'Number not found' unless include?(num)
+    @store[num%num_buckets].delete(num)
+    @count -= 1
   end
 
   def include?(num)
+    @store[num%num_buckets].include?(num)
   end
 
   private
@@ -87,5 +93,12 @@ class ResizingIntSet
   end
 
   def resize!
+    old_store = @store
+    @store = Array.new(num_buckets*2) { Array.new }
+    old_store.each do |bucket|
+      bucket.each do |num|
+        @store[num % @store.length].push(num)
+      end
+    end
   end
 end
