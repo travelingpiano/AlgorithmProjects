@@ -85,10 +85,13 @@ class LinkedList
 
   def remove(key)
     cur_node = @head
-    cur_node = cur_node.next while cur_node.next && cur_node.key != key
+    while cur_node.key != key && cur_node.next
+      cur_node = cur_node.next
+    end
     if cur_node.key == key #if it was found
       if !cur_node.prev #if it's the head
         @head = @head.next
+        @head.prev = nil
       elsif !cur_node.next #if it's the last node
         cur_node.prev.next = nil
       else #if it's something in the middle
