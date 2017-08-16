@@ -91,7 +91,9 @@ class LinkedList
     if cur_node.key == key #if it was found
       if !cur_node.prev #if it's the head
         @head = @head.next
-        @head.prev = nil
+        if @head
+          @head.prev = nil
+        end
       elsif !cur_node.next #if it's the last node
         cur_node.prev.next = nil
       else #if it's something in the middle
