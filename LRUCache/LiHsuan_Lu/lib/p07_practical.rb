@@ -7,18 +7,9 @@ def can_string_be_palindrome?(string)
     if !hash_map.include?(letter)
       hash_map.set(letter, 1)
     else
-      #update number of letters
+      #update frequency of letter
       hash_map.set(letter,hash_map[letter]+1)
     end
   end
-  odd = 0
-  hash_map.each do |key,val|
-    if val%2 == 1
-      odd += 1
-    end
-    if odd == 2
-      return false
-    end
-  end
-  true
+  hash_map.select{|key, val| val%2 == 1}.length < 2
 end
