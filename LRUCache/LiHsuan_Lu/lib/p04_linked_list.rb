@@ -45,15 +45,20 @@ class LinkedList
 
   def get(key)
     cur_node = @head
-    cur_node = cur_node.next while cur_node.next && cur_node.key != key
-    return cur_node.val if cur_node.key == key
+    while cur_node
+      return cur_node.val if cur_node.key == key
+      cur_node = cur_node.next
+    end
     nil
   end
 
   def include?(key)
     cur_node = @head
-    cur_node = cur_node.next while cur_node.next && cur_node.key != key
-    cur_node.key == key
+    while cur_node
+      return true if cur_node.key == key
+      cur_node = cur_node.next
+    end
+    false
   end
 
   def append(key, val)
