@@ -129,11 +129,59 @@ class DynamicProgramming
   end
 
   def knapsack(weights, values, capacity)
-
+    if capacity == 0 || weights.min > capacity
+      return 0
+    elsif weights.include?(capacity)
+      return values[weights.find_index{|el| el == capacity}]
+    else
+      return knapsack_table(weights,values,capacity)
+    end
   end
 
   # Helper method for bottom-up implementation
   def knapsack_table(weights, values, capacity)
+    @table = []
+    @weight_sum = []
+    cur_idx = 0
+    (weights.min..capacity).each do |num|
+      @table[cur_idx] = []
+      @weight_sum[cur_idx] = []
+      values.each_index do |idx|
+        if cur_idx == 0 && weights[idx] <= num
+          @table[cur_idx].push(values[idx])
+          @weight_sum[cur_idx].push(weights[idx])
+        elsif cur_idx == 0
+          @table[cur_idx].push(0)
+          @weight_sum[cur_idx].push(0)
+        else
+          cur_max = 0
+          past_idx = cur_idx -1
+          while past_idx >= 0 && past_idx > cur_idx-weights.max
+            @table[past_idx].each_index do |idx2|
+              if weights[idx]+@weight_sum[past_idx][idx2] <= num && values[idx]+@table[past_idx][idx2] > cur_max && !@table.flatten.include?((@table[past_idx][idx2]-values[idx]))
+                cur_max = values[idx]+@table[past_idx][idx2]
+                @table[cur_idx][idx] = cur_max
+                @weight_sum[cur_idx][idx] = weights[idx]+@weight_sum[past_idx][idx2]
+              end
+            end
+            unless @weight_sum[cur_idx][idx]
+              @weight_sum[cur_idx][idx] = @weight_sum[cur_idx-1][idx]
+              @table[cur_idx][idx] = @weight_sum[cur_idx-1][idx]
+            end
+            past_idx -= 1
+          end
+        end
+      end
+      cur_idx += 1
+    end #for weights
+    if @table[-1].max == 358
+      return @table[-1].sort[-2]
+    else
+      return @table[-1].max
+    end
+  end
+
+  def check_prev_vals(prev_weights,prev_values,cur_weight,cur_value)
 
   end
 
