@@ -142,31 +142,41 @@ class DynamicProgramming
   def knapsack_table(weights, values, capacity)
     @table = []
     @weight_sum = []
+    @combi = []
     cur_idx = 0
     (weights.min..capacity).each do |num|
       @table[cur_idx] = []
       @weight_sum[cur_idx] = []
+      @combi[cur_idx] = []
       values.each_index do |idx|
+        #the first iteration
         if cur_idx == 0 && weights[idx] <= num
           @table[cur_idx].push(values[idx])
           @weight_sum[cur_idx].push(weights[idx])
+          @combi[cur_idx].push([weights[idx]])
         elsif cur_idx == 0
           @table[cur_idx].push(0)
           @weight_sum[cur_idx].push(0)
+          @combi[cur_idx].push([])
         else
-          cur_max = 0
+          cur_max = @table[cur_idx-1][idx]
           past_idx = cur_idx -1
-          while past_idx >= 0 && past_idx > cur_idx-weights.max
+          while past_idx >= 0 && past_idx >= cur_idx-weights.max
             @table[past_idx].each_index do |idx2|
-              if weights[idx]+@weight_sum[past_idx][idx2] <= num && values[idx]+@table[past_idx][idx2] > cur_max && !@table.flatten.include?((@table[past_idx][idx2]-values[idx]))
+              #idx is the current index we're trying to insert, idx2 is the previous index we're searching at
+              if weights[idx]+@weight_sum[past_idx][idx2] <= num && values[idx]+@table[past_idx][idx2] > cur_max && !@combi[past_idx][idx2].include?(weights[idx])
+                prev_max = cur_max
                 cur_max = values[idx]+@table[past_idx][idx2]
                 @table[cur_idx][idx] = cur_max
                 @weight_sum[cur_idx][idx] = weights[idx]+@weight_sum[past_idx][idx2]
+                @combi[cur_idx][idx] = []
+                @combi[cur_idx][idx] = @combi[past_idx][idx2] + [weights[idx]]
               end
             end
             unless @weight_sum[cur_idx][idx]
               @weight_sum[cur_idx][idx] = @weight_sum[cur_idx-1][idx]
-              @table[cur_idx][idx] = @weight_sum[cur_idx-1][idx]
+              @table[cur_idx][idx] = @table[cur_idx-1][idx]
+              @combi[cur_idx][idx] = @combi[cur_idx-1][idx]
             end
             past_idx -= 1
           end
@@ -174,11 +184,8 @@ class DynamicProgramming
       end
       cur_idx += 1
     end #for weights
-    if @table[-1].max == 358
-      return @table[-1].sort[-2]
-    else
-      return @table[-1].max
-    end
+    p @combi[-1]
+    return @table[-1].max
   end
 
   def check_prev_vals(prev_weights,prev_values,cur_weight,cur_value)
